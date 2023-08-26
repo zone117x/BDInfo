@@ -25,8 +25,10 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Collections;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using BDInfo.DataTypes;
 using BDInfo.Views;
 using BDInfoLib;
@@ -67,7 +69,22 @@ public class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(string[] args) : this()
     {
         Folder = args.First();
-        Rescan();
+        // Rescan();
+        InitializeAsync().ConfigureAwait(true);
+    }
+
+    private async Task InitializeAsync()
+    {
+        // Ensure we are on the UI thread
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            throw new InvalidOperationException("Must be called from the UI thread.");
+        }
+
+        await Rescan().ConfigureAwait(true);
+        BDInfoSettings.AutosaveReport = true;
+        Environment.CurrentDirectory = Path.GetDirectoryName(Folder);
+        await StartScan().ConfigureAwait(true);
     }
 
     public ReactiveCommand<Unit, Unit> OpenReportWindow { get; }
@@ -398,25 +415,25 @@ public class MainWindowViewModel : ViewModelBase
             SetPath(localPath.LocalPath);
     }
 
-    public void Rescan()
+    public Task Rescan()
     {
-        if (string.IsNullOrEmpty(Folder)) return;
+        if (string.IsNullOrEmpty(Folder)) return Task.CompletedTask;
 
         var attr = File.GetAttributes(Folder);
         IsImage = attr.HasFlag(FileAttributes.Normal) || attr.HasFlag(FileAttributes.Archive);
 
-        SetPath(Folder);
+        return SetPath(Folder);
     }
 
-    private void SetPath(string path)
+    private Task SetPath(string path)
     {
         if (IsImage)
             Folder = path;
 
-        InitBDRom(path);
+        return InitBDRom(path);
     }
 
-    public void InitBDRom(string path)
+    public Task InitBDRom(string path)
     {
         IsPopupVisible = true;
 
@@ -431,6 +448,24 @@ public class MainWindowViewModel : ViewModelBase
         _initBDROMWorker.ProgressChanged += InitBDROMProgress;
         _initBDROMWorker.RunWorkerCompleted += InitBDROMCompleted;
         _initBDROMWorker.RunWorkerAsync(path);
+
+        var tcs = new TaskCompletionSource();
+        _initBDROMWorker.RunWorkerCompleted += (sender, args) =>
+        {
+            if (args.Error != null)
+            {
+                tcs.SetException(args.Error);
+            }
+            else if (args.Cancelled)
+            {
+                tcs.SetCanceled();
+            }
+            else
+            {
+                tcs.SetResult();
+            }
+        };
+        return tcs.Task;
     }
 
     private void InitBDROMWork(object sender, DoWorkEventArgs e)
@@ -713,16 +748,16 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public void StartScan()
+    public Task StartScan()
     {
-        if (_bdRom == null) return;
+        if (_bdRom == null) return Task.CompletedTask;
 
         if (_scanBDROMWorker is { IsBusy: true })
         {
             _abortScan = true;
             if (_streamFile != null)
                 _streamFile.AbortScan = true;
-            return;
+            return Task.CompletedTask;
         }
 
         ScanProgress = 0;
@@ -757,6 +792,23 @@ public class MainWindowViewModel : ViewModelBase
         _scanBDROMWorker.RunWorkerCompleted += ScanBDROMCompleted;
         _scanBDROMWorker.RunWorkerAsync(streamFiles);
 
+        var tcs = new TaskCompletionSource();
+        _scanBDROMWorker.RunWorkerCompleted += (sender, args) =>
+        {
+            if (args.Error != null)
+            {
+                tcs.SetException(args.Error);
+            }
+            else if (args.Cancelled)
+            {
+                tcs.SetCanceled();
+            }
+            else
+            {
+                tcs.SetResult();
+            }
+        };
+        return tcs.Task;
     }
 
     private void ScanBDROMWork(object sender, DoWorkEventArgs e)
