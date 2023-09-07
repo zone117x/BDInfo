@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using BDInfoLib;
 using BDInfoLib.BDROM;
+using BDInfoLib.BDROM.IO;
 
 namespace QuickSummary;
 
 public class Summary
 {
-    string Folder;
-    bool IsImage;
+    IDirectoryInfo Folder;
     bool IsPopupVisible;
     List<PlayListFileItem> PlaylistFiles = new();
     List<StreamClipItem> StreamFiles = new();
@@ -28,33 +27,12 @@ public class Summary
     public string DiscSummary { get; set; } = string.Empty;
     public Report Report { get; set; }
     
-    public Summary(string folder)
+    public Summary(IDirectoryInfo folder)
     {
-        this.Folder = folder;
+        Folder = folder;
     }
     
-    public void Rescan()
-    {
-        if (string.IsNullOrEmpty(Folder))
-        {
-            throw new Exception("Folder not specified");
-        }
-
-        var attr = File.GetAttributes(Folder);
-        IsImage = attr.HasFlag(FileAttributes.Normal) || attr.HasFlag(FileAttributes.Archive);
-
-        SetPath(Folder);
-    }
-
-    void SetPath(string path)
-    {
-        if (IsImage)
-            Folder = path;
-
-        InitBDRom(path);
-    }
-
-    void InitBDRom(string path)
+    public void InitBDRom()
     {
         IsPopupVisible = true;
 
@@ -62,11 +40,11 @@ public class Summary
         StreamFiles.Clear();
         Streams.Clear();
 
-        InitBDROMWork(path);
+        InitBDROMWork(Folder);
         InitBDROMCompleted();
     }
 
-    void InitBDROMWork(string path)
+    void InitBDROMWork(IDirectoryInfo path)
     {
         try
         {
@@ -105,14 +83,9 @@ public class Summary
             DiscSummary += $"Disc Title: {_bdRom.DiscTitle}\r\n";
         }
 
-        if (!IsImage)
-            Folder = _bdRom.DirectoryRoot?.FullName;
-
         if (_bdRom.DirectoryBDMV != null)
         {
             DiscSummary += $"Detected BDMV Folder: {_bdRom.DirectoryBDMV.FullName} (Disc Label: {_bdRom.VolumeLabel})\r\n";
-            if (IsImage)
-                DiscSummary += $"ISO Image: {Folder}\r\n";
         }
 
         var features = new List<string>();

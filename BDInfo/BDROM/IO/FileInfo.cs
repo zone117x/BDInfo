@@ -17,8 +17,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //=============================================================================
 
-using System.IO;
-
 namespace BDInfoLib.BDROM.IO;
 
 public class FileInfo : IFileInfo
@@ -32,7 +30,7 @@ public class FileInfo : IFileInfo
 
     public long Length => _impl.Length;
 
-    public bool IsDir => _impl.Attributes.HasFlag(FileAttributes.Directory);
+    public bool IsDir => _impl.Attributes.HasFlag(System.IO.FileAttributes.Directory);
 
     public bool IsImage => false;
 

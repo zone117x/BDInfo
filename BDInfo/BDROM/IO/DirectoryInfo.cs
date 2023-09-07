@@ -18,7 +18,6 @@
 //=============================================================================
 
 using System;
-using System.IO;
 
 namespace BDInfoLib.BDROM.IO;
 
@@ -65,7 +64,7 @@ public class DirectoryInfo : IDirectoryInfo
     {
         try
         {
-            var driveInfo = new DriveInfo(_impl.FullName);
+            var driveInfo = new System.IO.DriveInfo(_impl.FullName);
             return _impl.Root.FullName == _impl.FullName ? driveInfo.VolumeLabel : Name;
         }
         catch (Exception)

@@ -19,7 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml;
 using BDInfoLib.BDROM.IO;
@@ -70,24 +69,14 @@ public class BDROM
 
     public event OnPlaylistFileScanError PlaylistFileScanError;
 
-    public BDROM(string path)
+    public BDROM(IDirectoryInfo path)
     {
         BDInfoLibSettings.Load();
 
         //
         // Locate BDMV directories.
         //
-        var pathInfo = IO.FileInfo.FromFullName(path);
-        IDirectoryInfo tempPath;
-        if (pathInfo.IsDir)
-            tempPath = IO.DirectoryInfo.FromDirectoryName(pathInfo.FullName);
-        else
-        {
-            Stream fileStream = File.OpenRead(pathInfo.FullName);
-            var cdReader = new UdfReader(fileStream);
-            tempPath = DiscDirectoryInfo.FromImage(cdReader, "BDMV");
-        }
-        DirectoryBDMV = GetDirectoryBDMV(tempPath);
+        DirectoryBDMV = GetDirectoryBDMV(path);
 
         if (DirectoryBDMV == null)
         {
@@ -151,7 +140,9 @@ public class BDROM
         }
 
         var fullName = DirectoryRoot.FullName;
-        if (fullName != null && File.Exists(Path.Combine(fullName, "FilmIndex.xml")))
+        // var filmIndexFile = File.Exists(Path.Combine(fullName, "FilmIndex.xml"))
+        var filmIndexFile = DirectoryRoot.GetFiles().Any(f => f.Name == "FilmIndex.xml");
+        if (fullName != null && filmIndexFile)
         {
             IsDBOX = true;
         }
