@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using BDInfoLib.BDROM.IO;
-using DiscUtils.Udf;
 
 namespace BDInfoLib.BDROM;
 

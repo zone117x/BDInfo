@@ -90,8 +90,5 @@
         <Folder Include="Properties\" />
     </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="DiscUtils.Udf" Version="0.16.13" />
-    </ItemGroup>
 
 </Project>
