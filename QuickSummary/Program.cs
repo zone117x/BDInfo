@@ -11,9 +11,9 @@ class Program
     {
         var folder = args[0];
         Console.Error.WriteLine($"Opening {folder}");
-        
-        var fileInfo = BDInfoIO.FileInfo.FromFullName(folder);
-        var dir = BDInfoIO.DirectoryInfo.FromDirectoryName(fileInfo.FullName);
+
+        var fileInfo = System.IO.Path.GetFullPath(folder);
+        var dir = NativeFS.DirectoryInfo.FromDirectoryName(fileInfo);
         
         var summary = new Summary(dir);
         summary.InitBDRom();

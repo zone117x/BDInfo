@@ -26,8 +26,6 @@ public interface IFileInfo
     string Extension { get; }
     long Length { get; }
     bool IsDir { get; }
-    bool IsImage { get; }
-
     Stream OpenRead();
     StreamReader OpenText();
 }
