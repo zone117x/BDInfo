@@ -17,28 +17,20 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //=============================================================================
 
-using Newtonsoft.Json;
-
 namespace BDInfoLib;
 
 internal class BDInfoLibSettingsBase
 {
-    [JsonProperty]
     internal bool ExtendedStreamDiagnostics { get; set; } = true;
-
-    [JsonProperty] 
+    
     public bool EnableSSIF { get; set; } = true;
-
-    [JsonProperty] 
+    
     public bool FilterLoopingPlaylists { get; set; } = true;
-
-    [JsonProperty] 
+    
     public bool FilterShortPlaylists { get; set; } = true;
-
-    [JsonProperty] 
+    
     public int FilterShortPlaylistsValue { get; set; } = 20;
-
-    [JsonProperty] 
+    
     public bool KeepStreamOrder { get; set; } = true;
 }
 
@@ -55,79 +47,12 @@ public static class BDInfoLibSettings
     public static void Load(bool forceLoad) 
     {
         if (!forceLoad && _libSettings != null) return;
-
-        try
-        {
-            using var isoFile = ToolBox.GetIsolatedStorageFileStream(FileName, true);
-            using var reader = new StreamReader(isoFile);
-            _libSettings = JsonConvert.DeserializeObject<BDInfoLibSettingsBase>(reader.ReadToEnd(),
-                new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Populate });
-        }
-        catch (Exception)
-        {
-            // silently ignore
-
-            // On MacOS there is a very high chance this will fail with System.UnauthorizedAccessException,
-            // if ~/.local/share is not existing. IsolatedStorageFile might also look at /usr/share/[IsolatedStorage]
-            // Might also be a folder permissions problem.
-            // Apparrently this was addressed in https://github.com/dotnet/corefx/pull/29514 but is still failing, at least in MacOS Ventura
-        }
-
-        if (_libSettings == null)
-        {
-            try
-            {
-                using var reader = ToolBox.GetTextReaderWriter(FileName, true) as TextReader;
-                _libSettings = JsonConvert.DeserializeObject<BDInfoLibSettingsBase>(reader!.ReadToEnd(),
-                    new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Populate });
-            }
-            catch (Exception)
-            {
-                // ignore
-            }
-
-            _libSettings ??= new BDInfoLibSettingsBase();
-        }
-
-        if (!forceLoad)
-        {
-            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
-            {
-                Save();
-            };
-        }
+        _libSettings = new();
     }
 
     public static void Save()
     {
-        var json = JsonConvert.SerializeObject(_libSettings, Formatting.Indented);
-        try
-        {
-            using var isoFile = ToolBox.GetIsolatedStorageFileStream(FileName, false);
-            using var writer = new StreamWriter(isoFile);
-            writer.WriteLine(json);
-        }
-        catch (Exception)
-        {
-            // silently ignore
-
-            // On MacOS there is a very high chance this will fail with System.UnauthorizedAccessException
-            // if ~/.local/share is not existing. IsolatedStorageFile might also look at /usr/share/[IsolatedStorage]
-            // This also might be a folder permissions problem.
-            // Apparrently this was addressed in https://github.com/dotnet/corefx/pull/29514 but is still failing, at least in MacOS Ventura
-        }
-
-        try
-        {
-            using var writer = ToolBox.GetTextReaderWriter(FileName, false) as TextWriter;
-            writer!.WriteLine(json);
-        }
-        catch (Exception)
-        {
-            // silently ignore
-
-            // Might fail if application does not have permission to write to current folder
-        }
+        // removed
     }
 
     public static void ResetToDefault()
