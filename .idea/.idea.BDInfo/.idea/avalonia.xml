@@ -3,6 +3,7 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="BDInfoAV/App.axaml" value="BDInfoAV/BDInfo.csproj" />
         <entry key="BDInfoAV/Views/ChartWindow.axaml" value="BDInfoAV/BDInfoAV.csproj" />
         <entry key="BDInfoAV/Views/MainWindow.axaml" value="BDInfoAV/BDInfoAV.csproj" />
       </map>

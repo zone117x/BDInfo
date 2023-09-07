@@ -430,7 +430,7 @@ public class TSStreamFile
         streamState.WindowBytes = 0;
     }
 
-    public void Scan(List<TSPlaylistFile> playlists, bool isFullScan)
+    public void Scan(List<TSPlaylistFile> playlists, bool isFullScan, Action progressUpdate = null)
     {
         if (playlists == null || playlists.Count == 0)
         {
@@ -465,6 +465,7 @@ public class TSStreamFile
             int bufferLength;
             while ((bufferLength = fileStream.Read(buffer, 0, buffer.Length)) > 0 && !AbortScan)
             {
+                progressUpdate?.Invoke();
                 for (var i = 0; i < bufferLength; i++)
                 {
                     if (parser.SyncState == false)

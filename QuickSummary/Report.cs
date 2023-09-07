@@ -1,191 +1,32 @@
-//============================================================================
-// BDInfo - Blu-ray Video and Audio Analysis Tool
-// Copyright � 2010 Cinema Squid
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//=============================================================================
-
-
-using BDInfoLib.BDROM;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Avalonia;
-using Avalonia.Collections;
-using DynamicData.Binding;
-using System.Reactive;
-using BDInfo.Views;
-using System.Reactive.Linq;
+using BDInfoLib.BDROM;
 
-namespace BDInfo.ViewModels;
+namespace QuickSummary;
 
-public class ReportWindowViewModel : ViewModelBase
+public class Report
 {
-    private string _reportText = string.Empty;
     private readonly BDROM _bdrom;
-    private AvaloniaList<TSPlaylistFile> _playlists;
+    private List<TSPlaylistFile> _playlists;
     private readonly ScanBDROMResult _scanResult;
-    private TSPlaylistFile _selectedPlaylist;
-    private AvaloniaList<TSVideoStream> _videoStreams;
-    private AvaloniaList<int> _angleList;
-    private int _selectedPlaylistIndex;
-    private TSVideoStream _selectedVideoStream;
-    private int _selectedVideoStreamIndex;
-    private int _selectedAngle;
-    private int _selectedAngleIndex;
-    private int _chartTypeIndex;
+    private int SelectedPlaylistIndex;
+    private int ChartTypeIndex;
+    public string ReportText;
 
-    public Avalonia.Size WindowSize => BDInfoSettings.WindowSize;
-
-    public string ReportText
+    public Report(BDROM bdrom, IEnumerable<TSPlaylistFile> playlists, ScanBDROMResult scanResult)
     {
-        get => _reportText;
-        set => this.RaiseAndSetIfChanged(ref _reportText, value);
-    }
-
-    public AvaloniaList<TSPlaylistFile> Playlists
-    {
-        get => _playlists;
-        set => this.RaiseAndSetIfChanged(ref _playlists, value);
-    }
-
-    public TSPlaylistFile SelectedPlaylist
-    {
-        get => _selectedPlaylist;
-        set => this.RaiseAndSetIfChanged(ref _selectedPlaylist, value);
-    }
-
-    public AvaloniaList<TSVideoStream> VideoStreams
-    {
-        get => _videoStreams;
-        set => this.RaiseAndSetIfChanged(ref _videoStreams, value);
-    }
-
-    public AvaloniaList<int> AngleList  
-    {
-        get => _angleList;
-        set => this.RaiseAndSetIfChanged(ref _angleList, value);
-    }
-
-    public int SelectedPlaylistIndex
-    {
-        get => _selectedPlaylistIndex;
-        set => this.RaiseAndSetIfChanged(ref _selectedPlaylistIndex, value);
-    }
-
-    public TSVideoStream SelectedVideoStream
-    {
-        get => _selectedVideoStream;
-        set => this.RaiseAndSetIfChanged(ref _selectedVideoStream, value);
-    }
-
-    public int SelectedVideoStreamIndex
-    {
-        get => _selectedVideoStreamIndex;
-        set => this.RaiseAndSetIfChanged(ref _selectedVideoStreamIndex, value);
-    }
-
-    public int SelectedAngle
-    {
-        get => _selectedAngle;
-        set => this.RaiseAndSetIfChanged(ref _selectedAngle, value);
-    }
-
-    public int SelectedAngleIndex
-    {
-        get => _selectedAngleIndex;
-        set => this.RaiseAndSetIfChanged(ref _selectedAngleIndex, value);
-    }
-
-    public int ChartTypeIndex
-    {
-        get => _chartTypeIndex;
-        set => this.RaiseAndSetIfChanged(ref _chartTypeIndex, value);
-    }
-
-    public ReactiveCommand<Unit, Unit> OpenChartWindow { get; }
-
-    public ReportWindowViewModel()
-    {
-
-    }
-
-    public ReportWindowViewModel(BDROM bdrom, IEnumerable<TSPlaylistFile> playlists, ScanBDROMResult scanResult)
-    {
-        this.WhenPropertyChanged(model => model.SelectedPlaylist, notifyOnInitialValue: false)
-            .Subscribe(model => { UpdatePlaylist(); });
-
-        OpenChartWindow = ReactiveCommand.CreateFromObservable(OpenChartWindowImpl);
-
         _bdrom = bdrom;
-        Playlists = new AvaloniaList<TSPlaylistFile>(playlists);
+        _playlists = new List<TSPlaylistFile>(playlists);
         _scanResult = scanResult;
         SelectedPlaylistIndex = 0;
         ChartTypeIndex = 0;
 
         GenerateReport();
     }
-
-    private IObservable<Unit> OpenChartWindowImpl()
-    {
-        var chartWindow = new ChartWindow(MainWindow.Instance.Position)
-        {
-            DataContext = new ChartWindowViewModel(ChartTypeIndex, SelectedPlaylist,  SelectedVideoStream.PID, SelectedAngle)
-        };
-
-        chartWindow.ShowDialog(ReportWindow.Instance);
-
-        return Observable.Return(Unit.Default);
-    }
-
-    private void UpdatePlaylist()
-    {
-        if (SelectedPlaylist == null) return;
-
-        var tempList = new List<int>();
-        for (var i = 0; i <= SelectedPlaylist.AngleStreams.Count; i++)
-        {
-            tempList.Add(i);
-        }
-
-        AngleList = new AvaloniaList<int>(tempList);
-        VideoStreams = new AvaloniaList<TSVideoStream>(SelectedPlaylist.VideoStreams);
-        SelectedAngleIndex = 0;
-        SelectedVideoStreamIndex = 0;
-    }
-
-    public async void CopyReportToClipboard()
-    {
-        if (Application.Current is { Clipboard: { } })
-            await Application.Current.Clipboard!.SetTextAsync(ReportText);
-    }
-
+    
     private void GenerateReport()
     {
-        StreamWriter reportFile = null;
-        if (BDInfoSettings.AutosaveReport)
-        {
-            var reportName = $"BDINFO.{_bdrom.VolumeLabel}.txt";
-
-            reportName = ToolBox.GetSafeFileName(reportName);
-
-            reportFile = File.CreateText(Path.Combine(Environment.CurrentDirectory, reportName));
-        }
-
         ReportText = string.Empty;
         var protection = (_bdrom.IsBDPlus ? "BD+" : _bdrom.IsUHD ? "AACS2" : "AACS");
 
@@ -865,23 +706,6 @@ public class ReportWindowViewModel : ViewModelBase
                               $"\r\n" +
                               $"{summary}\r\n";
             }
-
-            GC.Collect();
         }
-
-        if (BDInfoSettings.AutosaveReport && reportFile != null)
-        {
-            try
-            {
-                reportFile.Write(ReportText);
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-
-        reportFile?.Close();
-
     }
 }
