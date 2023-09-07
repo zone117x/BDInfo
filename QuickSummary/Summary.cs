@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using BDInfoLib;
 using BDInfoLib.BDROM;
 
@@ -17,7 +16,6 @@ public class Summary
     List<StreamClipItem> StreamFiles = new();
     List<StreamFileItem> Streams = new();
     BDROM _bdRom;
-    string DiscSummary = string.Empty;
     int SelectedPlaylistIndex;
     double ScanProgress = 0;
     ScanBDROMResult _scanResult = new();
@@ -27,6 +25,7 @@ public class Summary
     TimeSpan ElapsedTime = TimeSpan.Zero;
     TimeSpan RemainingTime = TimeSpan.Zero;
     
+    public string DiscSummary { get; set; } = string.Empty;
     public Report Report { get; set; }
     
     public Summary(string folder)

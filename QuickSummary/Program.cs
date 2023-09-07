@@ -9,9 +9,10 @@ class Program
     public static void Main(string[] args)
     {
         var folder = args[0];
-        Console.WriteLine($"Opening {folder}");
+        Console.Error.WriteLine($"Opening {folder}");
         var summary = new Summary(folder);
         summary.Rescan();
+        Console.Error.WriteLine(summary.DiscSummary);
         summary.StartScan();
         Console.WriteLine(summary.Report.ReportText);
     }

@@ -32,30 +32,4 @@ public class ToolBox
 
         return val;
     }
-
-    public static IsolatedStorageFileStream GetIsolatedStorageFileStream(string fileName, bool readFile)
-    {
-        var isolatedStorageFile =
-            IsolatedStorageFile.GetStore(IsolatedStorageScope.Machine | IsolatedStorageScope.Assembly, null,
-                null);
-        var isoFile = isolatedStorageFile.OpenFile(fileName, readFile ? FileMode.OpenOrCreate : FileMode.Create,
-            FileAccess.ReadWrite, FileShare.ReadWrite);
-        return isoFile;
-    }
-
-    public static object GetTextReaderWriter(string fileName, bool readFile)
-    {
-        if (readFile)
-        {
-            return new StreamReader(fileName, Encoding.UTF8, true,
-                new FileStreamOptions
-                    { Access = FileAccess.ReadWrite, Mode = FileMode.OpenOrCreate, Share = FileShare.ReadWrite });
-        }
-        else
-        {
-            return new StreamWriter(fileName, Encoding.UTF8,
-                new FileStreamOptions
-                    { Access = FileAccess.ReadWrite, Mode = FileMode.Create, Share = FileShare.ReadWrite });
-        }
-    }
 }

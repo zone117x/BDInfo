@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
 
-        <ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>disable</ImplicitUsings>
 
         <ApplicationIcon>Resources\toma4025-rumax-bluray-disc.ico</ApplicationIcon>
         <Configurations>Debug;Release;Beta</Configurations>
@@ -92,11 +92,6 @@
 
     <ItemGroup>
         <PackageReference Include="DiscUtils.Udf" Version="0.16.13" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-        <PackageReference Include="System.IO.IsolatedStorage" Version="4.3.0" />
     </ItemGroup>
 
 </Project>
