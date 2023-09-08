@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using BDInfoLib.BDROM.IO;
 
 namespace BDInfoLib.BDROM;
@@ -212,12 +211,30 @@ public class BDROM
     {
         try
         {
-            var xDoc = new XmlDocument();
-            xDoc.Load(fileStream);
-            var xNsMgr = new XmlNamespaceManager(xDoc.NameTable);
-            xNsMgr.AddNamespace("di", "urn:BDA:bdmv;discinfo");
-            var xNode = xDoc.DocumentElement?.SelectSingleNode("di:discinfo/di:title/di:name", xNsMgr);
-            DiscTitle = xNode?.InnerText;
+            var xmlString = fileStream.ReadToEnd();
+            string startTag = "<di:name>";
+            string endTag = "</di:name>";
+
+            int startIndex = xmlString.IndexOf(startTag, StringComparison.Ordinal);
+            int endIndex = xmlString.IndexOf(endTag, StringComparison.Ordinal);
+
+            if (startIndex == -1 || endIndex == -1)
+            {
+                DiscTitle = null;
+            }
+            else
+            {
+                startIndex += startTag.Length;
+                int length = endIndex - startIndex;
+                DiscTitle = xmlString.Substring(startIndex, length);
+            }
+
+            // var xDoc = new XmlDocument();
+            // xDoc.Load(fileStream);
+            // var xNsMgr = new XmlNamespaceManager(xDoc.NameTable);
+            // xNsMgr.AddNamespace("di", "urn:BDA:bdmv;discinfo");
+            // var xNode = xDoc.DocumentElement?.SelectSingleNode("di:discinfo/di:title/di:name", xNsMgr);
+            // DiscTitle = xNode?.InnerText;
 
             if (!string.IsNullOrEmpty(DiscTitle) && DiscTitle.ToLowerInvariant() == "blu-ray")
                 DiscTitle = null;
