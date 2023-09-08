@@ -4,7 +4,6 @@ using IDirectoryInfo = BDInfoLib.BDROM.IO.IDirectoryInfo;
 using IFileInfo = BDInfoLib.BDROM.IO.IFileInfo;
 using IStream = BDInfoLib.BDROM.IO.IStream;
 using IBinaryReader = BDInfoLib.BDROM.IO.IBinaryReader;
-using IStreamReader = BDInfoLib.BDROM.IO.IStreamReader;
 
 namespace QuickSummary;
 
@@ -80,15 +79,11 @@ public class NativeFS
         
         public IStream OpenRead() => new Stream(_impl.OpenRead());
 
-        public IStreamReader OpenText() => new StreamReader(_impl.OpenText());
-    }
-
-    public class StreamReader : IStreamReader
-    {
-        private readonly System.IO.StreamReader _impl;
-        public StreamReader(System.IO.StreamReader impl) => _impl = impl;
-        public string ReadToEnd() => _impl.ReadToEnd();
-        public void Close() => _impl.Close();
+        public string ReadAllText()
+        {
+            using var streamReader = _impl.OpenText();
+            return streamReader.ReadToEnd();
+        }
     }
     
     public class Stream : IStream

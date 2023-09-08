@@ -27,5 +27,5 @@ public interface IFileInfo
     long Length { get; }
     bool IsDir { get; }
     IStream OpenRead();
-    IStreamReader OpenText();
+    string ReadAllText();
 }

@@ -148,7 +148,7 @@ public class BDROM
         var metaFiles = DirectoryMeta?.GetFiles("bdmt_eng.xml", SearchOption.AllDirectories);
         if (metaFiles is { Length: > 0 })
         {
-            ReadDiscTitle(metaFiles.First().OpenText());
+            ReadDiscTitle(metaFiles.First().ReadAllText());
         }
 
         //
@@ -207,16 +207,15 @@ public class BDROM
         }
     }
 
-    private void ReadDiscTitle(IStreamReader fileStream)
+    private void ReadDiscTitle(string xmlFileContent)
     {
         try
         {
-            var xmlString = fileStream.ReadToEnd();
             string startTag = "<di:name>";
             string endTag = "</di:name>";
 
-            int startIndex = xmlString.IndexOf(startTag, StringComparison.Ordinal);
-            int endIndex = xmlString.IndexOf(endTag, StringComparison.Ordinal);
+            int startIndex = xmlFileContent.IndexOf(startTag, StringComparison.Ordinal);
+            int endIndex = xmlFileContent.IndexOf(endTag, StringComparison.Ordinal);
 
             if (startIndex == -1 || endIndex == -1)
             {
@@ -226,7 +225,7 @@ public class BDROM
             {
                 startIndex += startTag.Length;
                 int length = endIndex - startIndex;
-                DiscTitle = xmlString.Substring(startIndex, length);
+                DiscTitle = xmlFileContent.Substring(startIndex, length);
             }
 
             // var xDoc = new XmlDocument();
@@ -243,11 +242,6 @@ public class BDROM
         {
             DiscTitle = null;
         }
-        finally
-        {
-            fileStream.Close();
-        }
-
     }
 
     public void Scan()
