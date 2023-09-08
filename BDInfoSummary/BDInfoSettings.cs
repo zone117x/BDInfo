@@ -1,4 +1,4 @@
-namespace QuickSummary;
+namespace BDInfoSummary;
 
 public class BDInfoSettings
 {

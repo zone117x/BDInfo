@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BDInfoLib.BDROM;
 
-namespace QuickSummary;
+namespace BDInfoSummary;
 
 public class Report
 {

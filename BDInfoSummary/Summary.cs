@@ -5,7 +5,7 @@ using BDInfoLib;
 using BDInfoLib.BDROM;
 using BDInfoLib.BDROM.IO;
 
-namespace QuickSummary;
+namespace BDInfoSummary;
 
 public class Summary
 {
@@ -20,7 +20,6 @@ public class Summary
     ScanBDROMResult _scanResult = new();
     TSStreamFile _streamFile;
     PlayListFileItem SelectedPlaylist = new();
-    string ProcessedFile = string.Empty;
     TimeSpan ElapsedTime = TimeSpan.Zero;
     TimeSpan RemainingTime = TimeSpan.Zero;
     
@@ -359,7 +358,6 @@ public class Summary
         UpdatePlaylistBitrates();
 
         ScanProgress = 100;
-        ProcessedFile = "Scan complete";
 
         ElapsedTime = TimeSpan.Zero;
         RemainingTime = TimeSpan.Zero;

@@ -1,8 +1,7 @@
 using System;
-using System.Reflection;
 using BDInfoLib.BDROM;
 
-namespace QuickSummary;
+namespace BDInfoSummary;
 
 public class ToolBox
 {
@@ -50,7 +49,8 @@ public class ToolBox
     
     public static string GetApplicationVersion()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
+        // var version = Assembly.GetExecutingAssembly().GetName().Version;
+        var version = "0.8.0.1";
 
         if (version != null)
 #if DEBUG || BETA
