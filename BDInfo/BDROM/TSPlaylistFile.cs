@@ -180,19 +180,17 @@ public class TSPlaylistFile
     public void Scan(Dictionary<string, TSStreamFile> streamFiles, Dictionary<string, TSStreamClipFile> streamClipFiles)
     {
         IStream fileStream = null;
-        IBinaryReader fileReader = null;
-
+        
         try
         {
             Streams.Clear();
             StreamClips.Clear();
 
             fileStream = _fileInfo.OpenRead();
-            fileReader = fileStream.GetBinaryReader();
             var streamLength = (ulong)fileStream.Length;
 
             var data = new byte[streamLength];
-            var dataLength = fileReader.Read(data, 0, data.Length);
+            var dataLength = fileStream.Read(data, 0, data.Length);
 
             var pos = 0;
 
@@ -444,7 +442,6 @@ public class TSPlaylistFile
         }
         finally
         {
-            fileReader?.Close();
             fileStream?.Close();
         }
     }

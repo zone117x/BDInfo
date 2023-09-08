@@ -3,7 +3,6 @@ using SearchOption = System.IO.SearchOption;
 using IDirectoryInfo = BDInfoLib.BDROM.IO.IDirectoryInfo;
 using IFileInfo = BDInfoLib.BDROM.IO.IFileInfo;
 using IStream = BDInfoLib.BDROM.IO.IStream;
-using IBinaryReader = BDInfoLib.BDROM.IO.IBinaryReader;
 
 namespace QuickSummary;
 
@@ -96,16 +95,6 @@ public class NativeFS
         public int Read(byte[] buffer, int offset, int count) => _impl.Read(buffer, offset, count);
 
         public void Close() => _impl.Close();
-        public IBinaryReader GetBinaryReader() => new BinaryReader(_impl);
         public void Dispose() => _impl.Dispose();
     }
-
-    public class BinaryReader : IBinaryReader
-    {
-        private readonly System.IO.BinaryReader _impl;
-        public BinaryReader(System.IO.Stream stream) => _impl = new System.IO.BinaryReader(stream);
-        public int Read(byte[] buffer, int index, int count) => _impl.Read(buffer, index, count);
-        public void Close() => _impl.Close();
-    }
-    
 }

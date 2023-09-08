@@ -43,7 +43,6 @@ public class TSStreamClipFile
     public void Scan()
     {
         IStream fileStream = null;
-        IBinaryReader fileReader = null;
         ulong streamLength = 0;
 
         try
@@ -58,13 +57,12 @@ public class TSStreamClipFile
                 fileStream = FileInfo.OpenRead();
                 if (fileStream != null)
                 {
-                    fileReader = fileStream.GetBinaryReader();
                     streamLength = (ulong)fileStream.Length;
                 }
             }
 
             var data = new byte[streamLength];
-            fileReader?.Read(data, 0, data.Length);
+            fileStream?.Read(data, 0, data.Length);
 
             var fileType = new byte[8];
             Array.Copy(data, 0, fileType, 0, fileType.Length);
@@ -215,7 +213,6 @@ public class TSStreamClipFile
         }
         finally
         {
-            fileReader?.Close();
             fileStream?.Close();
         }
     }
