@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Threading;
 using BDInfoLib.BDROM.IO;
 
 namespace BDInfoLib.BDROM;
@@ -830,10 +829,6 @@ public class TSStreamFile
                                                 k += streamInfoLength;
                                             }
                                         }
-                                        catch (ThreadInterruptedException)
-                                        {
-                                            return;
-                                        }
                                         catch (Exception ex)
                                         {
                                             // TODO
@@ -1455,12 +1450,6 @@ public class TSStreamFile
                 }
                 UpdateStreamBitrates(stream.PID, ptsLast, ptsDiff);
             }
-        }
-        catch (ThreadInterruptedException)
-        {
-            Debug.WriteLine("Thread Interrupted");
-
-            fileStream?.Close();
         }
         finally
         {
