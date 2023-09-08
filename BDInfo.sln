@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickSummary", "QuickSummar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BDInfoSummary", "BDInfoSummary\BDInfoSummary.csproj", "{99C2F5CB-6552-4C5C-829C-7634A10DEA4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BDInfoWasm", "BDInfoWasm\BDInfoWasm.csproj", "{05534495-7E25-4D75-8E74-EE17036041CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Beta|Any CPU = Beta|Any CPU
@@ -76,6 +78,24 @@ Global
 		{99C2F5CB-6552-4C5C-829C-7634A10DEA4E}.Release|ARM64.Build.0 = Release|Any CPU
 		{99C2F5CB-6552-4C5C-829C-7634A10DEA4E}.Release|x64.ActiveCfg = Release|Any CPU
 		{99C2F5CB-6552-4C5C-829C-7634A10DEA4E}.Release|x64.Build.0 = Release|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Beta|Any CPU.ActiveCfg = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Beta|Any CPU.Build.0 = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Beta|ARM64.ActiveCfg = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Beta|ARM64.Build.0 = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Beta|x64.ActiveCfg = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Beta|x64.Build.0 = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Debug|x64.Build.0 = Debug|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Release|ARM64.Build.0 = Release|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Release|x64.ActiveCfg = Release|Any CPU
+		{05534495-7E25-4D75-8E74-EE17036041CD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
