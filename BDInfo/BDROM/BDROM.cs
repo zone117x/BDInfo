@@ -207,7 +207,7 @@ public class BDROM
         }
     }
 
-    private void ReadDiscTitle(StreamReader fileStream)
+    private void ReadDiscTitle(IStreamReader fileStream)
     {
         try
         {
@@ -447,7 +447,7 @@ public class BDROM
         return 0;
     }
 
-    private void ReadIndexVersion(Stream indexStream)
+    private void ReadIndexVersion(IStream indexStream)
     {
         var buffer = new byte[8];
         var count = indexStream.Read(buffer, 0, 8);

@@ -179,8 +179,8 @@ public class TSPlaylistFile
 
     public void Scan(Dictionary<string, TSStreamFile> streamFiles, Dictionary<string, TSStreamClipFile> streamClipFiles)
     {
-        Stream fileStream = null;
-        BinaryReader fileReader = null;
+        IStream fileStream = null;
+        IBinaryReader fileReader = null;
 
         try
         {
@@ -188,7 +188,7 @@ public class TSPlaylistFile
             StreamClips.Clear();
 
             fileStream = _fileInfo.OpenRead();
-            fileReader = new BinaryReader(fileStream!);
+            fileReader = fileStream.GetBinaryReader();
             var streamLength = (ulong)fileStream.Length;
 
             var data = new byte[streamLength];

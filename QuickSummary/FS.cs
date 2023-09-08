@@ -1,8 +1,10 @@
 using System;
-using Stream = System.IO.Stream;
 using SearchOption = System.IO.SearchOption;
 using IDirectoryInfo = BDInfoLib.BDROM.IO.IDirectoryInfo;
 using IFileInfo = BDInfoLib.BDROM.IO.IFileInfo;
+using IStream = BDInfoLib.BDROM.IO.IStream;
+using IBinaryReader = BDInfoLib.BDROM.IO.IBinaryReader;
+using IStreamReader = BDInfoLib.BDROM.IO.IStreamReader;
 
 namespace QuickSummary;
 
@@ -63,6 +65,9 @@ public class NativeFS
     public class FileInfo : IFileInfo
     {
         private readonly System.IO.FileInfo _impl;
+        
+        public FileInfo(System.IO.FileInfo impl) => _impl = impl;
+        
         public string Name => _impl.Name;
 
         public string FullName => _impl.FullName;
@@ -72,11 +77,40 @@ public class NativeFS
         public long Length => _impl.Length;
 
         public bool IsDir => _impl.Attributes.HasFlag(System.IO.FileAttributes.Directory);
+        
+        public IStream OpenRead() => new Stream(_impl.OpenRead());
 
-        public FileInfo(System.IO.FileInfo impl) => _impl = impl;
-
-        public Stream OpenRead() => _impl.OpenRead();
-
-        public System.IO.StreamReader OpenText() => _impl.OpenText();
+        public IStreamReader OpenText() => new StreamReader(_impl.OpenText());
     }
+
+    public class StreamReader : IStreamReader
+    {
+        private readonly System.IO.StreamReader _impl;
+        public StreamReader(System.IO.StreamReader impl) => _impl = impl;
+        public string ReadToEnd() => _impl.ReadToEnd();
+        public void Close() => _impl.Close();
+    }
+    
+    public class Stream : IStream
+    {
+        private readonly System.IO.Stream _impl;
+        
+        public Stream(System.IO.Stream impl) => _impl = impl;
+        public long Length => _impl.Length;
+
+        public int Read(byte[] buffer, int offset, int count) => _impl.Read(buffer, offset, count);
+
+        public void Close() => _impl.Close();
+        public IBinaryReader GetBinaryReader() => new BinaryReader(_impl);
+        public void Dispose() => _impl.Dispose();
+    }
+
+    public class BinaryReader : IBinaryReader
+    {
+        private readonly System.IO.BinaryReader _impl;
+        public BinaryReader(System.IO.Stream stream) => _impl = new System.IO.BinaryReader(stream);
+        public int Read(byte[] buffer, int index, int count) => _impl.Read(buffer, index, count);
+        public void Close() => _impl.Close();
+    }
+    
 }

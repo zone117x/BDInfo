@@ -443,7 +443,7 @@ public class TSStreamFile
 
         _playlists = playlists;
         const int dataSize = 5242880;
-        Stream fileStream = null;
+        IStream fileStream = null;
         try
         {
             if (BDInfoLibSettings.EnableSSIF && InterleavedFile != null)

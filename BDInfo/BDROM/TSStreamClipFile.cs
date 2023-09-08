@@ -42,8 +42,8 @@ public class TSStreamClipFile
 
     public void Scan()
     {
-        Stream fileStream = null;
-        BinaryReader fileReader = null;
+        IStream fileStream = null;
+        IBinaryReader fileReader = null;
         ulong streamLength = 0;
 
         try
@@ -58,7 +58,7 @@ public class TSStreamClipFile
                 fileStream = FileInfo.OpenRead();
                 if (fileStream != null)
                 {
-                    fileReader = new BinaryReader(fileStream);
+                    fileReader = fileStream.GetBinaryReader();
                     streamLength = (ulong)fileStream.Length;
                 }
             }
