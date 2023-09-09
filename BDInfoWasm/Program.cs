@@ -22,7 +22,10 @@ public partial class MyClass
     internal static partial string GetTestValue();
 
     [JSImport("logProgress", "main.js")]
-    internal static partial void LogProgress(string msg);
+    internal static partial void LogProgress(double percent);
+
+    [JSImport("logStatus", "main.js")]
+    internal static partial void LogStatus(string msg);
 
     [JSImport("readFile", "main.js")]
     [return: JSMarshalAs<JSType.Promise<JSType.Any>>()]
@@ -37,7 +40,8 @@ public partial class MyClass
         // await ReadLargeFile(fileTree);
         var dir = new WebDirectoryInfo(fileTree, fileTree[0]);
         var summary = new Summary(dir);
-        summary.OnProgress += (msg) => LogProgress(msg);
+        summary.OnStatus += (msg) => LogStatus(msg);
+        summary.OnProgress += (progress) => LogProgress(progress);
         await summary.InitBDRom();
         Console.WriteLine(summary.DiscSummary);
         await summary.StartScan();

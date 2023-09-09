@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BDInfoLib;
@@ -24,7 +25,9 @@ public class Summary
     public string DiscSummary { get; set; } = string.Empty;
     public Report Report { get; set; }
 
-    public event Action<string> OnProgress;
+    public event Action<string> OnStatus;
+
+    public event Action<double> OnProgress;
     
     public Summary(IDirectoryInfo folder)
     {
@@ -233,13 +236,13 @@ public class Summary
     async Task ScanBDROMWork(List<TSStreamFile> streamFiles)
     {
         var scanState = new ScanBDROMState();
-        var progressUpdateInterval = TimeSpan.FromMilliseconds(1000);
-        var lastProgressOutput = DateTime.Now;
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
         scanState.OnUpdate += () =>
         {
-            if (DateTime.Now - lastProgressOutput >= progressUpdateInterval)
+            if (stopwatch.ElapsedMilliseconds > 500)
             {
-                lastProgressOutput = DateTime.Now;
+                stopwatch.Restart();
                 ScanBDROMProgress(scanState);
             }
         };
@@ -317,7 +320,8 @@ public class Summary
             
             var progressMsg = $"Scan progress: {ScanProgress:0.00}%\tElapsed: {ElapsedTime:mm\\:ss\\.ff}\tRemaining: {RemainingTime:mm\\:ss\\.ff}";
             Console.Error.WriteLine(progressMsg);
-            OnProgress?.Invoke(progressMsg);
+            OnProgress?.Invoke(ScanProgress);
+            OnStatus?.Invoke(progressMsg);
         }
         catch (Exception ex)
         {

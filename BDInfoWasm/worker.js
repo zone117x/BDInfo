@@ -4,7 +4,10 @@ worker.onmessage = (e) => {
   const { type, payload } = e.data;
   switch (type) {
     case 'progress':
-      document.getElementById('progress').innerText = payload;
+      document.getElementById('progress').value = payload;
+      break;
+    case 'status':
+      document.getElementById('status').innerText = payload;
       break;
     case 'report':
       document.getElementById('out').innerText += payload;

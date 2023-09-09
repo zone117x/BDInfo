@@ -11,6 +11,7 @@ setModuleImports('main.js', {
   getTestValue,
   readFile,
   logProgress,
+  logStatus,
 });
 
 const config = getConfig();
@@ -41,8 +42,12 @@ async function handleMessage({ type, payload }) {
   }
 }
 
-function logProgress(message) {
-  self.postMessage({ type: 'progress', payload: message });
+function logProgress(percent) {
+  self.postMessage({ type: 'progress', payload: percent });
+}
+
+function logStatus(message) {
+  self.postMessage({ type: 'status', payload: message });
 }
 
 function getTestValue() {
