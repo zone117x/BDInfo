@@ -44,12 +44,18 @@ document.getElementById("filepicker").addEventListener(
 function createDirectoryTree(files) {
   if (!files.length) return null;
   const fileMap = [];
-  const fileTree = [{ type: 'dir', name: files[0].webkitRelativePath.split('/')[0], children: [] }];
+  const fileTree = [{
+    type: 'dir',
+    name: files[0].webkitRelativePath.split('/')[0],
+    children: [],
+  }];
   let fileID = 0;
   Array.from(files).forEach(file => {
     const parts = (file.webkitRelativePath ?? file.relativePath).split('/').slice(1);
     let [cursor] = fileTree;
+    let accumulatedPath = cursor.name;
     parts.forEach((part, i) => {
+      accumulatedPath = `${accumulatedPath}/${part}`;
       let child = cursor.children.find(c => c.name === part);
       if (!child) {
         child = { name: part, type: i === parts.length - 1 ? 'file' : 'dir' };
@@ -61,6 +67,7 @@ function createDirectoryTree(files) {
           fileMap[child.fileID] = file;
         } else {
           child.children = [];
+          child.path = accumulatedPath;
         }
         cursor.children.push(child);
       }

@@ -31,11 +31,11 @@ public partial class MyClass
     [return: JSMarshalAs<JSType.Promise<JSType.String>>()]
     internal static async Task<string> SetFiles([JSMarshalAs<JSType.String>] string fileTreeJson) {
         Console.WriteLine("SetFiles called from JS, result: " + fileTreeJson);
-        var deserialized = JsonSerializer.Deserialize<WebFile[]>(fileTreeJson);
-        await ReadLargeFile(deserialized);
-        var testValueResp = GetTestValue();
-        Console.WriteLine("Test value from JS: " + testValueResp);
-        var jsonString = JsonSerializer.Serialize(deserialized);
+        var fileTree = JsonSerializer.Deserialize(fileTreeJson, typeof(WebFile[]), SourceGenerationContext.Default) as WebFile[];
+
+        await ReadLargeFile(fileTree);
+
+        var jsonString = JsonSerializer.Serialize(fileTree, typeof(WebFile[]), SourceGenerationContext.Default);
         await Task.Delay(100);
         return jsonString;
     }
