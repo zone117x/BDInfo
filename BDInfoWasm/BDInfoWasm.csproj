@@ -5,6 +5,12 @@
         <WasmMainJSPath>main.js</WasmMainJSPath>
         <OutputType>Exe</OutputType>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>full</TrimMode>
+		<RunAOTCompilation>true</RunAOTCompilation>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<InvariantTimezone>true</InvariantTimezone>
     </PropertyGroup>
 
     <ItemGroup>
