@@ -13,10 +13,13 @@
 
 <body>
   <input type="file" id="filepicker" name="fileList" webkitdirectory directory multiple />
+  <pre id="progress"></pre>
+  <pre id="errors"></pre>
   <ul id="listing"></ul>
   <pre id="filetree"></pre>
-  <span id="out"></span>
-  <script type='module' src="./main.js"></script>
+  <pre id="out"></pre>
+  <!--<script type='module' src="./main.js"></script>-->
+  <script type='module' src="./worker.js"></script>
 </body>
 
 </html>

@@ -13,16 +13,16 @@ public partial class MyClass
     [JSExport]
     internal static string Greeting()
     {
-        var text = $"Hello, World! Greetings from {GetHRef()}";
+        var text = $"Hello, World! Greetings from {GetTestValue()}";
         Console.WriteLine(text);
         return text;
     }
-
-    [JSImport("window.location.href", "main.js")]
-    internal static partial string GetHRef();
     
     [JSImport("getTestValue", "main.js")]
     internal static partial string GetTestValue();
+
+    [JSImport("logProgress", "main.js")]
+    internal static partial void LogProgress(string msg);
 
     [JSImport("readFile", "main.js")]
     [return: JSMarshalAs<JSType.Promise<JSType.Any>>()]
@@ -37,14 +37,17 @@ public partial class MyClass
         // await ReadLargeFile(fileTree);
         var dir = new WebDirectoryInfo(fileTree, fileTree[0]);
         var summary = new Summary(dir);
+        summary.OnProgress += (msg) => LogProgress(msg);
         await summary.InitBDRom();
         Console.WriteLine(summary.DiscSummary);
         await summary.StartScan();
         Console.WriteLine(summary.Report.ReportText);
 
-        var jsonString = JsonSerializer.Serialize(fileTree, typeof(WebFile[]), SourceGenerationContext.Default);
-        await Task.Delay(100);
-        return jsonString;
+        // var jsonString = JsonSerializer.Serialize(fileTree, typeof(WebFile[]), SourceGenerationContext.Default);
+        // await Task.Delay(100);
+        // return jsonString;
+
+        return summary.Report.ReportText;
     }
 
     static IEnumerable<WebFile> Flatten(WebFile root)

@@ -23,6 +23,8 @@ public class Summary
     
     public string DiscSummary { get; set; } = string.Empty;
     public Report Report { get; set; }
+
+    public event Action<string> OnProgress;
     
     public Summary(IDirectoryInfo folder)
     {
@@ -231,10 +233,11 @@ public class Summary
     async Task ScanBDROMWork(List<TSStreamFile> streamFiles)
     {
         var scanState = new ScanBDROMState();
+        var progressUpdateInterval = TimeSpan.FromMilliseconds(1000);
         var lastProgressOutput = DateTime.Now;
         scanState.OnUpdate += () =>
         {
-            if (DateTime.Now - lastProgressOutput >= TimeSpan.FromMilliseconds(500))
+            if (DateTime.Now - lastProgressOutput >= progressUpdateInterval)
             {
                 lastProgressOutput = DateTime.Now;
                 ScanBDROMProgress(scanState);
@@ -312,7 +315,9 @@ public class Summary
                 ? new TimeSpan((long)(ElapsedTime.Ticks / progress) - ElapsedTime.Ticks) 
                 : new TimeSpan(0);
             
-            Console.Error.WriteLine($"Scan progress: {ScanProgress:0.00}%\tElapsed: {ElapsedTime:mm\\:ss\\.ff}\tRemaining: {RemainingTime:mm\\:ss\\.ff}");
+            var progressMsg = $"Scan progress: {ScanProgress:0.00}%\tElapsed: {ElapsedTime:mm\\:ss\\.ff}\tRemaining: {RemainingTime:mm\\:ss\\.ff}";
+            Console.Error.WriteLine(progressMsg);
+            OnProgress?.Invoke(progressMsg);
         }
         catch (Exception ex)
         {
