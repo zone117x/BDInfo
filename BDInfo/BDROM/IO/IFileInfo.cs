@@ -17,6 +17,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //=============================================================================
 
+using System.Threading.Tasks;
+
 namespace BDInfoLib.BDROM.IO;
 
 public interface IFileInfo
@@ -27,5 +29,5 @@ public interface IFileInfo
     long Length { get; }
     bool IsDir { get; }
     IStream OpenRead();
-    string ReadAllText();
+    Task<string> ReadAllText();
 }

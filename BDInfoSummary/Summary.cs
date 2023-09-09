@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BDInfoLib;
 using BDInfoLib.BDROM;
 using BDInfoLib.BDROM.IO;
@@ -10,7 +11,6 @@ namespace BDInfoSummary;
 public class Summary
 {
     IDirectoryInfo Folder;
-    bool IsPopupVisible;
     List<PlayListFileItem> PlaylistFiles = new();
     List<StreamClipItem> StreamFiles = new();
     List<StreamFileItem> Streams = new();
@@ -31,19 +31,17 @@ public class Summary
         Folder = folder;
     }
     
-    public void InitBDRom()
+    public async Task InitBDRom()
     {
-        IsPopupVisible = true;
-
         PlaylistFiles.Clear();
         StreamFiles.Clear();
         Streams.Clear();
 
-        InitBDROMWork(Folder);
+        await InitBDROMWork(Folder);
         InitBDROMCompleted();
     }
 
-    void InitBDROMWork(IDirectoryInfo path)
+    async Task InitBDROMWork(IDirectoryInfo path)
     {
         try
         {
@@ -63,7 +61,8 @@ public class Summary
                 Console.Error.WriteLine($"StreamClipFileScanError: {exception}");
                 return true;
             };
-            _bdRom.Scan();
+            await _bdRom.Init();
+            await _bdRom.Scan();
         }
         catch (Exception ex)
         {
@@ -73,8 +72,6 @@ public class Summary
     
     void InitBDROMCompleted()
     {
-        IsPopupVisible = false;
-
         DiscSummary = string.Empty;
 
         if (!string.IsNullOrEmpty(_bdRom.DiscTitle))
@@ -209,7 +206,7 @@ public class Summary
         }
     }
     
-    public void StartScan()
+    public async Task StartScan()
     {
         if (_bdRom == null) throw new Exception("bdrom is null");
         
@@ -236,11 +233,11 @@ public class Summary
             }
         }
 
-        ScanBDROMWork(streamFiles);
+        await ScanBDROMWork(streamFiles);
         ScanBDROMCompleted();
     }
 
-    void ScanBDROMWork(List<TSStreamFile> streamFiles)
+    async Task ScanBDROMWork(List<TSStreamFile> streamFiles)
     {
         var scanState = new ScanBDROMState();
         var lastProgressOutput = DateTime.Now;
@@ -291,7 +288,7 @@ public class Summary
         {
             scanState.StreamFile = streamFile;
 
-            ScanBDROMThread(scanState);
+            await ScanBDROMThread(scanState);
 
             if (streamFile.FileInfo != null)
                 scanState.FinishedBytes += streamFile.FileInfo.Length;
@@ -333,14 +330,14 @@ public class Summary
         }
     }
     
-    void ScanBDROMThread(ScanBDROMState scanState)
+    async Task ScanBDROMThread(ScanBDROMState scanState)
     {
         try
         {
             _streamFile = scanState.StreamFile;
             _streamFile.AbortScan = false;
             var playlists = scanState.PlaylistMap[_streamFile.Name];
-            _streamFile.Scan(playlists, true, scanState.RaiseOnUpdate);
+            await _streamFile.Scan(playlists, true, scanState.RaiseOnUpdate);
         }
         catch (Exception ex)
         {

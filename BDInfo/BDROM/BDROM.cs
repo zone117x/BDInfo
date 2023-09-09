@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BDInfoLib.BDROM.IO;
 
 namespace BDInfoLib.BDROM;
@@ -80,7 +81,10 @@ public class BDROM
         {
             throw new Exception("Unable to locate BD structure.");
         }
-
+    }
+    
+    public async Task Init()
+    {
         DirectoryRoot = DirectoryBDMV.Parent;
 
         DirectoryBDJO = GetDirectory("BDJO", DirectoryBDMV, 0);
@@ -105,7 +109,7 @@ public class BDROM
         if (indexFile != null)
         {
             using var indexStream = indexFile.OpenRead();
-            ReadIndexVersion(indexStream);
+            await ReadIndexVersion(indexStream);
         }
 
         if (null != GetDirectory("BDSVM", DirectoryRoot, 0))
@@ -148,7 +152,8 @@ public class BDROM
         var metaFiles = DirectoryMeta?.GetFiles("bdmt_eng.xml", SearchOption.AllDirectories);
         if (metaFiles is { Length: > 0 })
         {
-            ReadDiscTitle(metaFiles.First().ReadAllText());
+            var xmlContent = await metaFiles.First().ReadAllText();
+            ReadDiscTitle(xmlContent);
         }
 
         //
@@ -244,14 +249,14 @@ public class BDROM
         }
     }
 
-    public void Scan()
+    public async Task Scan()
     {
         var errorStreamClipFiles = new List<TSStreamClipFile>();
         foreach (var streamClipFile in StreamClipFiles.Values)
         {
             try
             {
-                streamClipFile.Scan();
+                await streamClipFile.Scan();
             }
             catch (Exception ex)
             {
@@ -285,7 +290,7 @@ public class BDROM
         {
             try
             {
-                playlistFile.Scan(StreamFiles, StreamClipFiles);
+                await playlistFile.Scan(StreamFiles, StreamClipFiles);
             }
             catch (Exception ex)
             {
@@ -309,7 +314,7 @@ public class BDROM
                 var playlists = PlaylistFiles.Values.Where(playlist =>
                         playlist.StreamClips.Any(streamClip => streamClip.Name == streamFile.Name))
                     .ToList();
-                streamFile.Scan(playlists, false);
+                await streamFile.Scan(playlists, false);
             }
             catch (Exception ex)
             {
@@ -441,10 +446,10 @@ public class BDROM
         return 0;
     }
 
-    private void ReadIndexVersion(IStream indexStream)
+    private async Task ReadIndexVersion(IStream indexStream)
     {
         var buffer = new byte[8];
-        var count = indexStream.Read(buffer, 0, 8);
+        var count = await indexStream.Read(buffer, 0, 8);
         var pos = 0;
         if (count <= 0) return;
 

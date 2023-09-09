@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using SearchOption = System.IO.SearchOption;
 using IDirectoryInfo = BDInfoLib.BDROM.IO.IDirectoryInfo;
 using IFileInfo = BDInfoLib.BDROM.IO.IFileInfo;
@@ -78,10 +79,10 @@ public class NativeFS
         
         public IStream OpenRead() => new Stream(_impl.OpenRead());
 
-        public string ReadAllText()
+        public async Task<string> ReadAllText()
         {
             using var streamReader = _impl.OpenText();
-            return streamReader.ReadToEnd();
+            return await streamReader.ReadToEndAsync();
         }
     }
     
@@ -92,7 +93,7 @@ public class NativeFS
         public Stream(System.IO.Stream impl) => _impl = impl;
         public long Length => _impl.Length;
 
-        public int Read(byte[] buffer, int offset, int count) => _impl.Read(buffer, offset, count);
+        public Task<int> Read(byte[] buffer, int offset, int count) => _impl.ReadAsync(buffer, offset, count);
 
         public void Close() => _impl.Close();
         public void Dispose() => _impl.Dispose();

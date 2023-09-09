@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using BDInfoLib.BDROM.IO;
 
 // ReSharper disable UnusedVariable
@@ -177,7 +178,7 @@ public class TSPlaylistFile
         return !string.IsNullOrEmpty(_fileInfo.FullName) ? _fileInfo.FullName : string.Empty;
     }
 
-    public void Scan(Dictionary<string, TSStreamFile> streamFiles, Dictionary<string, TSStreamClipFile> streamClipFiles)
+    public async Task Scan(Dictionary<string, TSStreamFile> streamFiles, Dictionary<string, TSStreamClipFile> streamClipFiles)
     {
         IStream fileStream = null;
         
@@ -190,7 +191,7 @@ public class TSPlaylistFile
             var streamLength = (ulong)fileStream.Length;
 
             var data = new byte[streamLength];
-            var dataLength = fileStream.Read(data, 0, data.Length);
+            var dataLength = await fileStream.Read(data, 0, data.Length);
 
             var pos = 0;
 

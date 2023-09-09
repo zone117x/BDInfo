@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 using BDInfoSummary;
 
 namespace QuickSummary;
 
 class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var folder = args[0];
         Console.Error.WriteLine($"Opening {folder}");
@@ -14,9 +15,9 @@ class Program
         var dir = NativeFS.DirectoryInfo.FromDirectoryName(fileInfo);
         
         var summary = new Summary(dir);
-        summary.InitBDRom();
+        await summary.InitBDRom();
         Console.Error.WriteLine(summary.DiscSummary);
-        summary.StartScan();
+        await summary.StartScan();
         Console.WriteLine(summary.Report.ReportText);
     }
 }

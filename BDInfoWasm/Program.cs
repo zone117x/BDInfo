@@ -76,8 +76,9 @@ public partial class MyClass
             offset += respBytes.Length;
             // Log progress
             var timeElapsed = DateTime.Now - startTime;
-            var timeEstimated = TimeSpan.FromMilliseconds(timeElapsed.TotalMilliseconds * largestFile.size / readBytes);
             var percent = readBytes / largestFile.size * 100;
+            var itersRemaining = (largestFile.size - readBytes) / chunkSize;
+            var timeEstimated = timeElapsed / iters * itersRemaining;
             Console.WriteLine($"Read {readBytes}/{largestFile.size},\t{percent:0.00}%\tElapsed: {timeElapsed:mm\\:ss\\.ff},\tRemaining: {timeEstimated:mm\\:ss\\.ff}");
         }
         

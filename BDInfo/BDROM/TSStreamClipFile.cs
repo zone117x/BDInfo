@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using BDInfoLib.BDROM.IO;
 
 namespace BDInfoLib.BDROM;
@@ -40,7 +41,7 @@ public class TSStreamClipFile
         Name = fileInfo.Name.ToUpper();
     }
 
-    public void Scan()
+    public async Task Scan()
     {
         IStream fileStream = null;
         ulong streamLength = 0;
@@ -62,7 +63,10 @@ public class TSStreamClipFile
             }
 
             var data = new byte[streamLength];
-            fileStream?.Read(data, 0, data.Length);
+            if (fileStream != null)
+            {
+                await fileStream.Read(data, 0, data.Length);
+            }
 
             var fileType = new byte[8];
             Array.Copy(data, 0, fileType, 0, fileType.Length);
