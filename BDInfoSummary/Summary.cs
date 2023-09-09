@@ -15,8 +15,6 @@ public class Summary
     List<StreamClipItem> StreamFiles = new();
     List<StreamFileItem> Streams = new();
     BDROM _bdRom;
-    int SelectedPlaylistIndex;
-    double ScanProgress = 0;
     ScanBDROMResult _scanResult = new();
     TSStreamFile _streamFile;
     PlayListFileItem SelectedPlaylist = new();
@@ -199,19 +197,12 @@ public class Summary
         {
             DiscSummary += "(*) Some playlists on this disc have hidden tracks. These tracks are marked with an asterisk.";
         }
-
-        if (PlaylistFiles.Count > 0)
-        {
-            SelectedPlaylistIndex = 0;
-        }
     }
     
     public async Task StartScan()
     {
         if (_bdRom == null) throw new Exception("bdrom is null");
         
-        ScanProgress = 0;
-
         var streamFiles = new List<TSStreamFile>();
         if (!PlaylistFiles.Any(item => item.IsChecked))
         {
@@ -314,7 +305,7 @@ public class Summary
             var progress = ((double)finishedBytes / scanState.TotalBytes);
             if (progress < 0) progress = 0;
             if (progress > 1) progress = 1;
-            ScanProgress = progress * 100;
+            var ScanProgress = progress * 100;
 
             ElapsedTime = DateTime.Now.Subtract(scanState.TimeStarted);
             RemainingTime = progress is > 0 and < 100 
@@ -353,8 +344,6 @@ public class Summary
     {
         UpdateSubtitleChapterCount();
         UpdatePlaylistBitrates();
-
-        ScanProgress = 100;
 
         ElapsedTime = TimeSpan.Zero;
         RemainingTime = TimeSpan.Zero;

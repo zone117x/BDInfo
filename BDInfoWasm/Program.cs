@@ -4,6 +4,7 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Linq;
+using BDInfoSummary;
 
 Console.WriteLine("Hello, Browser!");
 
@@ -33,7 +34,13 @@ public partial class MyClass
         Console.WriteLine("SetFiles called from JS, result: " + fileTreeJson);
         var fileTree = JsonSerializer.Deserialize(fileTreeJson, typeof(WebFile[]), SourceGenerationContext.Default) as WebFile[];
 
-        await ReadLargeFile(fileTree);
+        // await ReadLargeFile(fileTree);
+        var dir = new WebDirectoryInfo(fileTree, fileTree[0]);
+        var summary = new Summary(dir);
+        await summary.InitBDRom();
+        Console.WriteLine(summary.DiscSummary);
+        await summary.StartScan();
+        Console.WriteLine(summary.Report.ReportText);
 
         var jsonString = JsonSerializer.Serialize(fileTree, typeof(WebFile[]), SourceGenerationContext.Default);
         await Task.Delay(100);

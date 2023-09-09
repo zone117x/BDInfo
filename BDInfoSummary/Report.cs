@@ -10,8 +10,6 @@ public class Report
     private readonly BDROM _bdrom;
     private List<TSPlaylistFile> _playlists;
     private readonly ScanBDROMResult _scanResult;
-    private int SelectedPlaylistIndex;
-    private int ChartTypeIndex;
     public string ReportText;
 
     public Report(BDROM bdrom, IEnumerable<TSPlaylistFile> playlists, ScanBDROMResult scanResult)
@@ -19,8 +17,6 @@ public class Report
         _bdrom = bdrom;
         _playlists = new List<TSPlaylistFile>(playlists);
         _scanResult = scanResult;
-        SelectedPlaylistIndex = 0;
-        ChartTypeIndex = 0;
 
         GenerateReport();
     }
